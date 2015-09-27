@@ -231,141 +231,73 @@ NAN_METHOD(scrollMouse)
           |___/           
 */
 
+struct KeyMapping {
+	const char *str;
+	MMKeyCode keyCode;
+};
+
 int CheckKeyCodes(char* k, MMKeyCode *key) 
 {
 	if (!key) return -1;
 
-	if (strcmp(k, "alt") == 0)
-	{
-		*key = K_ALT;
+	static KeyMapping keyMapping[] = {
+		{"alt", K_ALT},
+		{"command", K_META},
+		{"control", K_CONTROL},
+		{"shift", K_SHIFT},
+		{"backspace", K_BACKSPACE},
+		{"enter", K_RETURN},
+		{"tab", K_TAB},
+		{"up", K_UP},
+		{"down", K_DOWN},
+		{"left", K_LEFT},
+		{"right", K_RIGHT},
+		{"escape", K_ESCAPE},
+		{"delete", K_DELETE},
+		{"home", K_HOME},
+		{"end", K_END},
+		{"pageup", K_PAGEUP},
+		{"pagedown", K_PAGEDOWN},
+		{"space", K_SPACE},
+		{"f1", K_F1},
+		{"f2", K_F2},
+		{"f3", K_F3},
+		{"f4", K_F4},
+		{"f5", K_F5},
+		{"f6", K_F6},
+		{"f7", K_F7},
+		{"f8", K_F8},
+		{"f9", K_F9},
+		{"f10", K_F10},
+		{"f11", K_F11},
+		{"f12", K_F12},
+	};
+
+	static KeyMapping windowsMapping[] = {
+		{"printscreen", K_PRINTSCREEN},
+	};
+
+	for (auto mapping : keyMapping) {
+		if (strcmp(k, mapping.str) == 0) {
+			*key = mapping.keyCode;
+			return 0;
+		}
 	}
-  	else if (strcmp(k, "command") == 0)
-	{
-		*key = K_META;
+
+	for (auto mapping : windowsMapping) {
+		if (strcmp(k, mapping.str) == 0) {
+			#if defined(IS_WINDOWS)
+				*key = mapping.keyCode;
+				return 0;
+			#else
+				NanThrowError("printscreen is only supported on Windows.");
+			#endif
+		}
 	}
-  	else if (strcmp(k, "control") == 0)
+
+	if (strlen(k) == 1)
 	{
-		*key = K_CONTROL;
-	}
-  	else if (strcmp(k, "shift") == 0)
-	{
-		*key = K_SHIFT;
-	}
-	else if (strcmp(k, "backspace") == 0)
-	{
-		*key = K_BACKSPACE;
-	}
-	else if (strcmp(k, "enter") == 0)
-	{
-		*key = K_RETURN;
-	}
-	else if (strcmp(k, "tab") == 0)
-	{
-		*key = K_TAB;
-	}
-	else if (strcmp(k, "up") == 0)
-	{
-		*key = K_UP;
-	}
-	else if (strcmp(k, "down") == 0)
-	{
-		*key = K_DOWN;
-	}
-	else if (strcmp(k, "left") == 0)
-	{
-		*key = K_LEFT;
-	}
-	else if (strcmp(k, "right") == 0)
-	{
-		*key = K_RIGHT;
-	}
-	else if (strcmp(k, "escape") == 0)
-	{
-		*key = K_ESCAPE;
-	}
-	else if (strcmp(k, "delete") == 0)
-	{
-		*key = K_DELETE;
-	}
-	else if (strcmp(k, "home") == 0)
-	{
-		*key = K_HOME;
-	}
-	else if (strcmp(k, "end") == 0)
-	{
-		*key = K_END;
-	}
-	else if (strcmp(k, "pageup") == 0)
-	{
-		*key = K_PAGEUP;
-	}
-	else if (strcmp(k, "pagedown") == 0)
-	{
-		*key = K_PAGEDOWN;
-	}
-	else if (strcmp(k, "space") == 0)
-	{
-		*key = K_SPACE;
-	}
-	else if (strcmp(k, "f1") == 0)
-	{
-		*key = K_F1;
-	}
-	else if (strcmp(k, "f2") == 0)
-	{
-		*key = K_F2;
-	}
-	else if (strcmp(k, "f3") == 0)
-	{
-		*key = K_F3;
-	}
-	else if (strcmp(k, "f4") == 0)
-	{
-		*key = K_F4;
-	}
-	else if (strcmp(k, "f5") == 0)
-	{
-		*key = K_F5;
-	}
-	else if (strcmp(k, "f6") == 0)
-	{
-		*key = K_F6;
-	}
-	else if (strcmp(k, "f7") == 0)
-	{
-		*key = K_F7;
-	}
-	else if (strcmp(k, "f8") == 0)
-	{
-		*key = K_F8;
-	}
-	else if (strcmp(k, "f9") == 0)
-	{
-		*key = K_F9;
-	}
-	else if (strcmp(k, "f10") == 0)
-	{
-		*key = K_F10;
-	}
-	else if (strcmp(k, "f11") == 0)
-	{
-		*key = K_F11;
-	}
-	else if (strcmp(k, "f12") == 0)
-	{
-		*key = K_F12;
-	}
-	else if (strcmp(k, "printscreen") == 0)
-	{
-		#if defined(IS_WINDOWS)
-			*key = K_PRINTSCREEN;
-		#else
-	 		NanThrowError("printscreen is only supported on Windows.");
-	 	#endif
-	}
-	else if (strlen(k) == 1)
-	{
-		*key = keyCodeForChar(*k); 
+		*key = keyCodeForChar(*k);
 	}
 	else
 	{
