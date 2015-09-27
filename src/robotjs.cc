@@ -275,6 +275,13 @@ int CheckKeyCodes(char* k, MMKeyCode *key)
 
 	static KeyMapping windowsMapping[] = {
 		{"printscreen", K_PRINTSCREEN},
+		{"volumemute", K_VOLUMEMUTE},
+		{"volumedown", K_VOLUMEDOWN},
+		{"volumeup", K_VOLUMEUP},
+		{"nexttrack", K_NEXTTRACK},
+		{"prevtrack", K_PREVTRACK},
+		{"stop", K_STOP},
+		{"playpause", K_PLAYPAUSE}
 	};
 
 	for (auto mapping : keyMapping) {
