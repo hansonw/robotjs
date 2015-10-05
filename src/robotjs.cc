@@ -273,16 +273,19 @@ int CheckKeyCodes(char* k, MMKeyCode *key)
 		{"f12", K_F12},
 	};
 
-	static KeyMapping windowsMapping[] = {
-		{"printscreen", K_PRINTSCREEN},
+	#if defined(USE_X11)
+		static KeyMapping volumeKeyMapping[] = {
+			{"volumemute", 0},
+			{"volumedown", 0},
+			{"volumeup", 0}
+		};
+	#else
+		static KeyMapping volumeKeyMapping[] = {
 		{"volumemute", K_VOLUMEMUTE},
 		{"volumedown", K_VOLUMEDOWN},
-		{"volumeup", K_VOLUMEUP},
-		{"nexttrack", K_NEXTTRACK},
-		{"prevtrack", K_PREVTRACK},
-		{"stop", K_STOP},
-		{"playpause", K_PLAYPAUSE}
+			{"volumeup", K_VOLUMEUP}
 	};
+	#endif
 
 	for (auto mapping : keyMapping) {
 		if (strcmp(k, mapping.str) == 0) {
@@ -291,16 +294,25 @@ int CheckKeyCodes(char* k, MMKeyCode *key)
 		}
 	}
 
-	for (auto mapping : windowsMapping) {
+	for (auto mapping : volumeKeyMapping) {
 		if (strcmp(k, mapping.str) == 0) {
-			#if defined(IS_WINDOWS)
+			if (mapping.keyCode) {
 				*key = mapping.keyCode;
 				return 0;
+			} else {
+				NanThrowError("Volume keys are not supported on this system.");
+			}
+		}
+	}
+
+	if (strcmp(k, "printscreen") == 0) {
+		#if defined(IS_WINDOWS)
+			*key = K_PRINTSCREEN;
+			return 0;
 			#else
 				NanThrowError("printscreen is only supported on Windows.");
 			#endif
 		}
-	}
 
 	if (strlen(k) == 1)
 	{
